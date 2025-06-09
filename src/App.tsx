@@ -19,6 +19,9 @@ import Appointments from "./pages/Appointments";
 import AppointmentHistory from "./pages/AppointmentHistory";
 import Profile from "./pages/Profile";
 import MedicalReports from "./pages/MedicalReports";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +39,9 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/services" element={<Services />} />
               
               {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>

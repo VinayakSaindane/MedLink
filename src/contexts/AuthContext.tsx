@@ -53,27 +53,48 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 };
 
 // Mock data for demonstration
-const mockUsers: (User & { password: string })[] = [
-  {
-    id: '1',
-    email: 'patient@demo.com',
-    password: 'password',
-    name: 'John Patient',
-    role: 'patient',
-    profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
-  },
-  {
-    id: '1',
-    email: 'doctor@demo.com',
-    password: 'password',
-    name: 'Dr. Sarah Wilson',
-    role: 'doctor',
-    specialization: 'Cardiology',
-    experience: 8,
-    rating: 4.8,
-    profileImage: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face'
+const LOCAL_STORAGE_USERS_KEY = 'medlink_all_users';
+
+const getInitialUsers = (): (User & { password: string })[] => {
+  const storedUsers = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
+  if (storedUsers) {
+    return JSON.parse(storedUsers);
   }
-];
+  return [
+    {
+      id: '1',
+      email: 'patient@demo.com',
+      password: 'password',
+      name: 'John Patient',
+      role: 'patient',
+      profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
+    },
+    {
+      id: '2',
+      email: 'doctor@demo.com',
+      password: 'password',
+      name: 'Dr. Sarah Wilson',
+      role: 'doctor',
+      specialization: 'Cardiology',
+      experience: 8,
+      rating: 4.8,
+      profileImage: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face'
+    },
+    {
+      id: '3',
+      email: 'doctor2@demo.com',
+      password: 'password',
+      name: 'Dr. Alex Johnson',
+      role: 'doctor',
+      specialization: 'Pediatrics',
+      experience: 5,
+      rating: 4.5,
+      profileImage: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face'
+    }
+  ];
+};
+
+let allUsers: (User & { password: string })[] = getInitialUsers();
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, {
@@ -84,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Check for stored user on app load
-    const storedUser = localStorage.getItem('medapp_user');
+    const storedUser = localStorage.getItem('medlink_user');
     if (storedUser) {
       dispatch({ type: 'SET_USER', payload: JSON.parse(storedUser) });
     } else {
@@ -98,13 +119,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const user = mockUsers.find(u => 
+    const user = allUsers.find(u => 
       u.email === email && u.password === password && u.role === role
     );
     
     if (user) {
       const { password: _, ...userWithoutPassword } = user;
-      localStorage.setItem('medapp_user', JSON.stringify(userWithoutPassword));
+      localStorage.setItem('medlink_user', JSON.stringify(userWithoutPassword));
       dispatch({ type: 'SET_USER', payload: userWithoutPassword });
     } else {
       dispatch({ type: 'SET_LOADING', payload: false });
@@ -118,7 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const existingUser = mockUsers.find(u => u.email === userData.email);
+    const existingUser = allUsers.find(u => u.email === userData.email);
     if (existingUser) {
       dispatch({ type: 'SET_LOADING', payload: false });
       throw new Error('User already exists');
@@ -134,19 +155,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       rating: userData.rating
     };
     
-    localStorage.setItem('medapp_user', JSON.stringify(newUser));
+    allUsers.push({ ...newUser, password: userData.password });
+    localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(allUsers));
+    localStorage.setItem('medlink_user', JSON.stringify(newUser));
     dispatch({ type: 'SET_USER', payload: newUser });
   };
 
   const logout = () => {
-    localStorage.removeItem('medapp_user');
+    localStorage.removeItem('medlink_user');
     dispatch({ type: 'CLEAR_USER' });
   };
 
   const updateProfile = (userData: Partial<User>) => {
     if (state.user) {
       const updatedUser = { ...state.user, ...userData };
-      localStorage.setItem('medapp_user', JSON.stringify(updatedUser));
+      localStorage.setItem('medlink_user', JSON.stringify(updatedUser));
       dispatch({ type: 'UPDATE_USER', payload: userData });
     }
   };
