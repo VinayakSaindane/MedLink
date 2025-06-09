@@ -49,7 +49,7 @@ const Login = () => {
       setEmail('patient@demo.com');
     } else {
       setEmail('doctor@demo.com');
-    }
+    } 
     setPassword('password');
   };
 

@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Calendar, Clock, User, FileText, ArrowLeft } from 'lucide-react';
 
 const BookAppointment = () => {
-  const { doctorId } = useParams<{ doctorId: string }>();
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const { user } = useAuth();
   const { doctors, bookAppointment } = useAppointments();
   const navigate = useNavigate();
@@ -25,13 +25,50 @@ const BookAppointment = () => {
   const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const doctor = doctors.find(d => d.id === doctorId);
+  const doctor = doctors.find(d => d.id === selectedDoctorId);
 
-  if (!doctor) {
+  if (!selectedDoctorId || !doctor) {
     return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Doctor not found</h2>
-        <Button onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex items-center space-x-4">
+          <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
+          <h1 className="text-2xl font-bold">Book Appointment</h1>
+        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Select a Doctor</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <RadioGroup
+              value={selectedDoctorId || ''}
+              onValueChange={setSelectedDoctorId}
+              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {doctors.map(d => (
+                <div key={d.id} className="flex items-center space-x-2">
+                  <RadioGroupItem value={d.id} id={`doctor-${d.id}`} />
+                  <Label htmlFor={`doctor-${d.id}`} className="flex-1 cursor-pointer">
+                    <Card className="p-4 hover:shadow-lg transition-shadow">
+                      <div className="flex items-center space-x-4">
+                        <Avatar className="w-12 h-12">
+                          <AvatarImage src={d.profileImage} alt={d.name} />
+                          <AvatarFallback>{d.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="font-semibold text-lg">{d.name}</h3>
+                          <p className="text-gray-600 text-sm">{d.specialization}</p>
+                        </div>
+                      </div>
+                    </Card>
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -89,14 +126,7 @@ const BookAppointment = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center space-x-4">
-        <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-        <h1 className="text-2xl font-bold">Book Appointment</h1>
-      </div>
+
 
       <div className="grid md:grid-cols-3 gap-6">
         {/* Doctor Info */}

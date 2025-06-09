@@ -89,12 +89,13 @@ const Dashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link to="/dashboard">
+            <Link to="/book-appointment">
               <Button className="w-full h-auto p-4 flex flex-col items-center space-y-2">
                 <Plus className="h-6 w-6" />
                 <span>Book Appointment</span>
               </Button>
             </Link>
+             
             <Link to="/reports">
               <Button variant="outline" className="w-full h-auto p-4 flex flex-col items-center space-y-2">
                 <FileText className="h-6 w-6" />
@@ -149,7 +150,9 @@ const Dashboard = () => {
             <div className="text-center py-8">
               <Clock className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <p className="text-gray-600">No upcoming appointments</p>
-              <Button className="mt-4">Book Your First Appointment</Button>
+              <Link to="/book-appointment">
+                <Button className="mt-4">Book Your First Appointment</Button>
+              </Link>
             </div>
           )}
         </CardContent>

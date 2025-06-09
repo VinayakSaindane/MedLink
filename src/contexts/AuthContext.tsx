@@ -63,7 +63,7 @@ const mockUsers: (User & { password: string })[] = [
     profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
   },
   {
-    id: '2',
+    id: '1',
     email: 'doctor@demo.com',
     password: 'password',
     name: 'Dr. Sarah Wilson',

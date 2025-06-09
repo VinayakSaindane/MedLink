@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppointments } from '@/contexts/AppointmentContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,10 +10,17 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Calendar, Clock, User, Phone, MessageCircle, X } from 'lucide-react';
+import { RadioGroup } from '@radix-ui/react-dropdown-menu';
+import { RadioGroupItem } from '@radix-ui/react-radio-group';
 
 const Appointments = () => {
   const { user } = useAuth();
-  const { appointments, cancelAppointment, updateAppointmentStatus } = useAppointments();
+  const { appointments, cancelAppointment, updateAppointmentStatus, doctors } = useAppointments();
+  const navigate = useNavigate();
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
+
+
+
   const { toast } = useToast();
 
   const userAppointments = appointments.filter(apt => 
@@ -192,13 +200,47 @@ const Appointments = () => {
                   No upcoming appointments
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  {user?.role === 'patient' 
-                    ? "You don't have any upcoming appointments scheduled."
+                  {user?.role === 'patient'
+                    ? "You don't have any upcoming appointments scheduled. Select a doctor below to book your first appointment."
                     : "You don't have any upcoming patient appointments."
                   }
                 </p>
                 {user?.role === 'patient' && (
-                  <Button>Book Your First Appointment</Button>
+                  <div className="mt-6">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Book a New Appointment</h3>
+                    <RadioGroup
+                      value={selectedDoctorId || ''}
+                      onValueChange={setSelectedDoctorId}
+                      className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                    >
+                      {doctors.map(d => (
+                        <div key={d.id} className="flex items-center space-x-2">
+                          <RadioGroupItem value={d.id} id={`doctor-${d.id}`} className="sr-only" />
+                          <label htmlFor={`doctor-${d.id}`} className="flex-1 cursor-pointer">
+                            <Card className="p-4 hover:shadow-lg transition-shadow">
+                              <div className="flex items-center space-x-4">
+                                <Avatar className="w-12 h-12">
+                                  <AvatarImage src={d.profileImage} alt={d.name} />
+                                  <AvatarFallback>{d.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <h3 className="font-semibold text-lg">{d.name}</h3>
+                                  <p className="text-gray-600 text-sm">{d.specialization}</p>
+                                </div>
+                              </div>
+                            </Card>
+                          </label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                    <Button 
+                      onClick={() => navigate('/book-appointment')}
+                      className="mt-6 w-full"
+                      disabled={!selectedDoctorId}
+                    >
+                      Proceed to Book Appointment
+                    </Button>
+                  </div>
                 )}
               </CardContent>
             </Card>

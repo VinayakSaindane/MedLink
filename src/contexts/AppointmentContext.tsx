@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useReducer } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface Doctor {
   id: string;
@@ -146,14 +147,18 @@ const mockDoctors: Doctor[] = [
 export const AppointmentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appointmentReducer, {
     doctors: mockDoctors,
-    appointments: [],
+    appointments: JSON.parse(localStorage.getItem('appointments') || '[]'),
     reports: []
   });
+
+  React.useEffect(() => {
+    localStorage.setItem('appointments', JSON.stringify(state.appointments));
+  }, [state.appointments]);
 
   const bookAppointment = (appointmentData: Omit<Appointment, 'id'>) => {
     const appointment: Appointment = {
       ...appointmentData,
-      id: Date.now().toString()
+      id: uuidv4()
     };
     dispatch({ type: 'BOOK_APPOINTMENT', payload: appointment });
   };

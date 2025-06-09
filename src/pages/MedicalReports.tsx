@@ -1,5 +1,7 @@
+'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Tesseract from 'tesseract.js';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,68 +22,85 @@ interface MedicalReport {
   status: 'processed' | 'processing' | 'failed';
 }
 
+const STORAGE_KEY = 'medical_reports';
+
 const MedicalReports = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [reports, setReports] = useState<MedicalReport[]>([
-    {
-      id: '1',
-      name: 'Blood Test Results - January 2024',
-      type: 'PDF',
-      uploadDate: '2024-01-15',
-      doctor: 'Dr. Sarah Wilson',
-      extractedText: 'Blood glucose: 95 mg/dL (Normal)\nCholesterol: 180 mg/dL (Normal)\nHemoglobin: 14.2 g/dL (Normal)',
-      fileSize: '2.3 MB',
-      status: 'processed'
-    },
-    {
-      id: '2',
-      name: 'X-Ray Chest - December 2023',
-      type: 'JPEG',
-      uploadDate: '2023-12-20',
-      doctor: 'Dr. Michael Brown',
-      extractedText: 'Chest X-ray shows clear lung fields. No abnormalities detected.',
-      fileSize: '5.1 MB',
-      status: 'processed'
-    }
-  ]);
+  const [reports, setReports] = useState<MedicalReport[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Load from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      setReports(JSON.parse(stored));
+    }
+  }, []);
+
+  // Save to localStorage
+  const saveReports = (data: MedicalReport[]) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    setReports(data);
+  };
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-    }
+    if (file) setSelectedFile(file);
   };
 
   const handleUpload = async () => {
     if (!selectedFile) return;
-
     setIsUploading(true);
-    
-    // Simulate upload and OCR processing
-    setTimeout(() => {
-      const newReport: MedicalReport = {
-        id: Date.now().toString(),
-        name: selectedFile.name,
-        type: selectedFile.type.split('/')[1].toUpperCase(),
-        uploadDate: new Date().toISOString().split('T')[0],
-        doctor: 'Dr. Pending Assignment',
-        extractedText: 'OCR processing completed. Sample extracted text from uploaded document.',
-        fileSize: `${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`,
-        status: 'processed'
-      };
 
-      setReports(prev => [newReport, ...prev]);
-      setSelectedFile(null);
-      setIsUploading(false);
-      
+    const id = Date.now().toString();
+    const newReport: MedicalReport = {
+      id,
+      name: selectedFile.name,
+      type: selectedFile.type.split('/')[1]?.toUpperCase() || 'UNKNOWN',
+      uploadDate: new Date().toISOString().split('T')[0],
+      doctor: 'Dr. Pending Assignment',
+      extractedText: '',
+      fileSize: `${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`,
+      status: 'processing'
+    };
+
+    const updatedReports = [newReport, ...reports];
+    saveReports(updatedReports);
+
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      reader.onload = async () => {
+        const imageData = reader.result as string;
+        const result = await Tesseract.recognize(imageData, 'eng', {
+          logger: m => console.log(m)
+        });
+
+        newReport.extractedText = result.data.text || 'No text found';
+        newReport.status = 'processed';
+
+        const finalReports = [newReport, ...reports.filter(r => r.id !== id)];
+        saveReports(finalReports);
+
+        toast({
+          title: 'Upload successful',
+          description: 'OCR completed and report saved.',
+        });
+        setSelectedFile(null);
+        setIsUploading(false);
+      };
+    } catch (error) {
+      console.error(error);
+      newReport.status = 'failed';
+      saveReports([newReport, ...reports.filter(r => r.id !== id)]);
       toast({
-        title: 'Upload successful',
-        description: 'Your medical report has been uploaded and processed.',
+        title: 'Upload failed',
+        description: 'OCR processing failed.',
       });
-    }, 3000);
+      setIsUploading(false);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -97,9 +116,7 @@ const MedicalReports = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Medical Reports</h1>
-        <p className="text-gray-600 mt-2">
-          Upload and manage your medical documents with automatic text extraction
-        </p>
+        <p className="text-gray-600 mt-2">Upload and manage your medical documents with OCR text extraction</p>
       </div>
 
       {/* Upload Section */}
@@ -119,12 +136,12 @@ const MedicalReports = () => {
             <Input
               id="file-upload"
               type="file"
-              accept=".pdf,.jpg,.jpeg,.png"
+              accept=".jpg,.jpeg,.png"
               onChange={handleFileUpload}
               disabled={isUploading}
             />
           </div>
-          
+
           {selectedFile && (
             <div className="flex items-center justify-between p-3 bg-blue-50 rounded-md">
               <div className="flex items-center gap-2">
@@ -134,11 +151,7 @@ const MedicalReports = () => {
                   ({(selectedFile.size / (1024 * 1024)).toFixed(1)} MB)
                 </span>
               </div>
-              <Button 
-                onClick={handleUpload} 
-                disabled={isUploading}
-                size="sm"
-              >
+              <Button onClick={handleUpload} disabled={isUploading} size="sm">
                 {isUploading ? 'Processing...' : 'Upload'}
               </Button>
             </div>
@@ -146,10 +159,10 @@ const MedicalReports = () => {
         </CardContent>
       </Card>
 
-      {/* Reports List */}
+      {/* Reports Section */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Your Reports</h2>
-        
+
         {reports.length === 0 ? (
           <Card>
             <CardContent className="text-center py-8">
@@ -185,7 +198,7 @@ const MedicalReports = () => {
                     </div>
                   </div>
                 </CardHeader>
-                
+
                 {report.extractedText && (
                   <CardContent>
                     <div className="space-y-3">
