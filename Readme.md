@@ -7,3 +7,5 @@ Used lucid-react library for the icons.
  
 Created AuthContext.js for the authentication and authorization, since i was getting the server error to fetch the client side data to backend.
 
+Used the Lovable bot for the initail structure of the website
+
