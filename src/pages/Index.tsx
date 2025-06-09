@@ -5,6 +5,7 @@ import { Calendar, Clock, FileText, Shield, Star, Users, ChevronRight, Play, Che
 import Header from './Header';
 import Footer from './Footer';
 
+
 const Index = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [statsLoaded, setStatsLoaded] = useState(false);

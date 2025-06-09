@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Target, Users, Heart, Lightbulb, Shield, Sparkles, ArrowRight, CheckCircle, Award, Star } from 'lucide-react'; // Icons for mission, team, values, innovation
 import Header from './Header'; // Ensure this path is correct relative to About.tsx
-import Footer from './Footer'; // Assuming you have a Footer component now
+import Footer from './Footer';
+ // Assuming you have a Footer component now
 
 const About: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);

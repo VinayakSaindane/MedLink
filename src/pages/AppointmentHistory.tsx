@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Calendar, Clock, TrendingUp, Users } from 'lucide-react';
 
+
 const AppointmentHistory = () => {
   const { user } = useAuth();
   const { appointments } = useAppointments();

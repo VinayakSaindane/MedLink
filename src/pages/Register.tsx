@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Lock, User, Mail, Shield, ChevronRight, GraduationCap, Building2 } from 'lucide-react'; // Added more icons
+import { Eye, EyeOff, Lock, User, Mail, Shield, ChevronRight, GraduationCap, Building2 } from 'lucide-react'; 
+
 
 const Register = () => {
   const [formData, setFormData] = useState({

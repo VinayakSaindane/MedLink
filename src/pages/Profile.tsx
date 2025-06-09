@@ -26,6 +26,7 @@ import {
   EyeOff
 } from 'lucide-react';
 
+
 const Profile = () => {
   const { user, updateProfile } = useAuth();
   const { toast } = useToast();

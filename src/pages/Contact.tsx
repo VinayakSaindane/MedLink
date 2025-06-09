@@ -7,7 +7,7 @@ import { Mail, Phone, MapPin, Send, Sparkles, ArrowRight, CornerDownRight } from
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Header from './Header';
 import Footer from './Footer';
-import toast, { Toaster } from 'react-hot-toast'; // Import toast and Toaster
+import toast, { Toaster } from 'react-hot-toast'; 
 
 const Contact: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);

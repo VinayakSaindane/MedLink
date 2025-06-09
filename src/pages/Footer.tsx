@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Assuming you use react-router-dom for navigation
-import { Globe, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react'; // Example icons from lucide-react
+import { Globe, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react'; 
+
 
 const Footer: React.FC = () => {
   return (

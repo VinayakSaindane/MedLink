@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, FileText, Eye, Download, Calendar, User } from 'lucide-react';
 
+
 interface MedicalReport {
   id: string;
   name: string;

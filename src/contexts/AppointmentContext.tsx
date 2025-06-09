@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useReducer } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+
 export interface Doctor {
   id: string;
   name: string;
@@ -30,6 +31,7 @@ export interface Appointment {
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   type: 'consultation' | 'follow-up' | 'emergency';
   notes?: string;
+  paymentId?: string;
 }
 
 export interface MedicalReport {

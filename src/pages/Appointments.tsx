@@ -13,6 +13,7 @@ import { Calendar, Clock, User, Phone, MessageCircle, X } from 'lucide-react';
 import { RadioGroup } from '@radix-ui/react-dropdown-menu';
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
 
+
 const Appointments = () => {
   const { user } = useAuth();
   const { appointments, cancelAppointment, updateAppointmentStatus, doctors } = useAppointments();

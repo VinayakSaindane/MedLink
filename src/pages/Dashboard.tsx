@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, FileText, Star, Users, Plus, TrendingUp } from 'lucide-react';
 
+
 const Dashboard = () => {
   const { user } = useAuth();
   const { appointments, doctors, reports } = useAppointments();

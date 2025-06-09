@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Mail, ChevronRight, ShieldCheck } from 'lucide-react'; // Changed Mail for success state to ShieldCheck for medical theme
+import { ArrowLeft, Mail, ChevronRight, ShieldCheck } from 'lucide-react'; 
+
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');

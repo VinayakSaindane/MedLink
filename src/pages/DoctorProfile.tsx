@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Star, MapPin, Calendar, DollarSign, Clock, Award } from 'lucide-react';
 
+
 const DoctorProfile = () => {
   const { id } = useParams<{ id: string }>();
   const { doctors } = useAppointments();

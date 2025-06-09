@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Calendar, Clock, User, FileText, ArrowLeft } from 'lucide-react';
 
+
 const BookAppointment = () => {
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const { user } = useAuth();
